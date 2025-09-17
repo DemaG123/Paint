@@ -5,10 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -26,10 +27,19 @@ public class MainActivity extends AppCompatActivity {
     ConstraintLayout surfaceDessinApp;
     private Path currentPath; // Path for drawing
     private Paint paint; // Paint object for styling the lines
+    private List<Path> paths; // To store the paths drawn by the user
+    private List<DrawnPath> pathsAndTools;
+
+    ImageView buttonCrayon;
+    ImageView buttonEfface;
+    ImageView buttonPot;
+
 
     private Crayon crayon; // Crayon object to configure paint
+    private Efface efface;
 
 
+    ImageView buttonSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +53,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         surfaceDessinApp = findViewById(R.id.surfaceDessinApp);
+        buttonCrayon = findViewById(R.id.buttonCrayon);
+        buttonPot = findViewById(R.id.buttonPot);
+        buttonEfface = findViewById(R.id.buttonEfface);
 
         crayon = new Crayon();
+        efface = new Efface();
+
+        paint = crayon.getPaint();
 
         sd = new SurfaceDessin(this);
         sd.setLayoutParams(new ConstraintLayout.LayoutParams(-1,-1)); // Match parent
@@ -53,40 +69,28 @@ public class MainActivity extends AppCompatActivity {
         Ecouteur ec = new Ecouteur();
 
         sd.setOnTouchListener(ec);
+        buttonCrayon.setOnClickListener(ec);
+        buttonPot.setOnClickListener(ec);
+        buttonEfface.setOnClickListener(ec);
 
     }
 
-    // Surface sur laquelle on va dessiner
     private class SurfaceDessin extends View {
-        Paint crayonFull;
-        Path path;
-        private List<Path> paths; // To store the paths drawn by the user
 
         public SurfaceDessin(Context context) {
             super(context);
-
             // Initialize the paths list
-            paths = new ArrayList<>();
+            pathsAndTools = new ArrayList<>();
             currentPath = new Path();
-
-            // Set up the paint (line color, width, etc.)
-            //paint = new Paint();
-            //paint.setColor(0xFF000000); // Black color
-            //paint.setStrokeWidth(20); // Line width
-            //paint.setStyle(Paint.Style.STROKE); // Draw only the outline
-            //paint.setAntiAlias(true); // Smooth lines
-
         }
 
         @Override
         protected void onDraw(@NonNull Canvas canvas) {
             super.onDraw(canvas);
 
-            Paint paint = crayon.getPaint();
-
             // Draw all the paths (draw the entire history)
-            for (Path path : paths) {
-                canvas.drawPath(path, paint);
+            for (DrawnPath drawnPath : pathsAndTools) {
+                canvas.drawPath(drawnPath.path, drawnPath.paint);  // Use the correct paint for each path
             }
 
             // Draw the current path
@@ -95,30 +99,68 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class Ecouteur implements View.OnTouchListener{
+    private class Ecouteur implements View.OnTouchListener, View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            if (v == buttonCrayon) {
+                buttonSelected = buttonCrayon;
+                paint = crayon.getPaint();
+            }
+            if (v == buttonPot) {
+                buttonSelected = buttonPot;
+            }
+            if (v == buttonEfface) {
+                buttonSelected = buttonEfface;
+                paint = efface.getPaint();
+            }
+
+
+
+        }
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            float x = event.getX();
-            float y = event.getY();
 
-            if (event.getAction() == MotionEvent.ACTION_DOWN){
-                currentPath.moveTo(x, y);
-                return true;
+            if (buttonSelected == buttonCrayon || buttonSelected == buttonEfface) {
+                float x = event.getX();
+                float y = event.getY();
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    currentPath.moveTo(x, y);
+                    return true;
+                }
+
+                if (event.getAction() == MotionEvent.ACTION_MOVE){
+                    currentPath.lineTo(x, y);
+                    sd.invalidate();
+                    return true;
+                }
+                if (event.getAction() == MotionEvent.ACTION_UP){
+                    pathsAndTools.add(new DrawnPath(currentPath, paint));
+                    currentPath = new Path();  // Reset current path for next line
+                    return true;
+                }
+            }
+            if (buttonSelected == buttonPot) {
+                sd.setBackgroundColor(Color.LTGRAY);
             }
 
-            if (event.getAction() == MotionEvent.ACTION_MOVE){
-                currentPath.lineTo(x, y);
-                sd.invalidate();
-                return true;
-            }
-            if (event.getAction() == MotionEvent.ACTION_UP){
-                // When the user lifts their finger, save the current path
-                //paths.add(currentPath);
-                //currentPath = new Path(); // Reset current path for next line
-                return true;
-            }
+
             return true;
+
+        }
+
+    }
+
+    private class DrawnPath {
+        Path path;
+        Paint paint;
+
+        DrawnPath(Path path, Paint paint) {
+            this.path = path;
+            this.paint = paint;
         }
     }
+
 }
