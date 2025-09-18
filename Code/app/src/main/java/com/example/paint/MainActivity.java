@@ -205,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
             if (buttonSelected == buttonCrayon || buttonSelected == buttonEfface) {
                 float x = event.getX();
                 float y = event.getY();
+                crayon.setColor(backgroundColor);
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
                     currentPath.moveTo(x, y);
@@ -217,7 +218,8 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
                 if (event.getAction() == MotionEvent.ACTION_UP){
-                    pathsAndTools.add(new DrawnPath(currentPath, paint));
+                    Paint newPaint = new Paint(paint);
+                    pathsAndTools.add(new DrawnPath(currentPath, newPaint));
                     currentPath = new Path();  // Reset current path for next line
                     return true;
                 }
