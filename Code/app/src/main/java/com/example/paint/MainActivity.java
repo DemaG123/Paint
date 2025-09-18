@@ -1,5 +1,8 @@
 package com.example.paint;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +13,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     Chip chipBlue;
     Chip chipPurple;
 
+    SeekBar strokeWidth;
+
     private Crayon crayon; // Crayon object to configure paint
     private Efface efface;
 
@@ -64,11 +70,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        surfaceDessinApp = findViewById(R.id.surfaceDessinApp);
-        buttonCrayon = findViewById(R.id.buttonCrayon);
-        buttonPot = findViewById(R.id.buttonPot);
-        buttonEfface = findViewById(R.id.buttonEfface);
-
+        // Menu color buttons
         chipWhite = findViewById(R.id.chipWhite);
         chipBlack = findViewById(R.id.chipBlack);
         chipRed = findViewById(R.id.chipRed);
@@ -78,24 +80,36 @@ public class MainActivity extends AppCompatActivity {
         chipBlue = findViewById(R.id.chipBlue);
         chipPurple = findViewById(R.id.chipPurple);
 
+        // Canva Area
+        surfaceDessinApp = findViewById(R.id.surfaceDessinApp);
+
+        // Menu tools buttons
+        buttonCrayon = findViewById(R.id.buttonCrayon);
+        buttonPot = findViewById(R.id.buttonPot);
+        buttonEfface = findViewById(R.id.buttonEfface);
+        strokeWidth = findViewById(R.id.strokeWidth);
+
+        //Tools
         crayon = new Crayon();
+        paint = crayon.getPaint();
         efface = new Efface();
 
-        paint = crayon.getPaint();
-
+        //Canvas
         sd = new SurfaceDessin(this);
         sd.setLayoutParams(new ConstraintLayout.LayoutParams(-1,-1)); // Match parent
         surfaceDessinApp.addView(sd);
 
+        //Listener for Tools & Canvas
         Ecouteur ec = new Ecouteur();
-
         sd.setOnTouchListener(ec);
         buttonCrayon.setOnClickListener(ec);
         buttonPot.setOnClickListener(ec);
         buttonEfface.setOnClickListener(ec);
+        strokeWidth.setOnSeekBarChangeListener(ec);
 
+
+        //Listener for Colors
         Ecouteur ecColor = new Ecouteur();
-
         chipWhite.setOnClickListener(ecColor);
         chipBlack.setOnClickListener(ecColor);
         chipRed.setOnClickListener(ecColor);
@@ -106,9 +120,6 @@ public class MainActivity extends AppCompatActivity {
         chipPurple.setOnClickListener(ecColor);
 
     }
-
-
-
 
     private class SurfaceDessin extends View {
 
@@ -124,24 +135,26 @@ public class MainActivity extends AppCompatActivity {
         protected void onDraw(@NonNull Canvas canvas) {
             super.onDraw(canvas);
 
-            // Draw all the paths (draw the entire history)
             for (DrawnPath drawnPath : pathsAndTools) {
-                canvas.drawPath(drawnPath.path, drawnPath.paint);  // Use the correct paint for each path
+                canvas.drawPath(drawnPath.path, drawnPath.paint);
             }
 
-            // Draw the current path
             canvas.drawPath(currentPath, paint);
 
         }
     }
 
-    private class Ecouteur implements View.OnTouchListener, View.OnClickListener{
-
+    private class Ecouteur implements View.OnTouchListener, View.OnClickListener , SeekBar.OnSeekBarChangeListener{
+        int strokeFactor = strokeWidth.getProgress();
         @Override
         public void onClick(View v) {
+
             if (v == buttonCrayon) {
+
                 buttonSelected = buttonCrayon;
                 paint = crayon.getPaint();
+                strokeWidth.setVisibility(VISIBLE);
+                crayon.setStrokeWidth(strokeFactor * 20);
             }
             else if (v == buttonPot) {
                 buttonSelected = buttonPot;
@@ -161,10 +174,10 @@ public class MainActivity extends AppCompatActivity {
                 int color = getChipBackgroundColor(chip);
 
                 if (buttonSelected == buttonCrayon) {
-                    paint.setColor(color);   // crayon changes color
+                    paint.setColor(color);
                 } else {
-                    backgroundColor = color; // bucket changes background reference
-                    efface.setColor(backgroundColor); // keep eraser synced
+                    backgroundColor = color;
+                    efface.setColor(backgroundColor);
                 }
             }
 
@@ -176,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
             if (buttonSelected == buttonCrayon || buttonSelected == buttonEfface) {
                 float x = event.getX();
                 float y = event.getY();
-                //crayon.setColor(backgroundColor);
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
                     currentPath.moveTo(x, y);
@@ -191,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
                 if (event.getAction() == MotionEvent.ACTION_UP){
                     Paint newPaint = new Paint(paint);
                     pathsAndTools.add(new DrawnPath(currentPath, newPaint));
-                    currentPath = new Path();  // Reset current path for next line
+                    currentPath = new Path();
                     return true;
                 }
             }
@@ -205,6 +217,23 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            crayon.setStrokeWidth(progress * 20);
+            if (buttonSelected == buttonCrayon) {
+                paint.setStrokeWidth(crayon.getPaint().getStrokeWidth());
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
     }
 
     private int getChipBackgroundColor(Chip chip) {
