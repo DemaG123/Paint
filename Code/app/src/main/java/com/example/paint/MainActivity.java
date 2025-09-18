@@ -19,6 +19,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.chip.Chip;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,12 +36,22 @@ public class MainActivity extends AppCompatActivity {
     ImageView buttonEfface;
     ImageView buttonPot;
 
+    Chip chipWhite;
+    Chip chipBlack;
+    Chip chipRed;
+    Chip chipOrange;
+    Chip chipYellow;
+    Chip chipGreen;
+    Chip chipBlue;
+    Chip chipPurple;
 
     private Crayon crayon; // Crayon object to configure paint
     private Efface efface;
 
 
     ImageView buttonSelected;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +69,15 @@ public class MainActivity extends AppCompatActivity {
         buttonPot = findViewById(R.id.buttonPot);
         buttonEfface = findViewById(R.id.buttonEfface);
 
+        chipWhite = findViewById(R.id.chipWhite);
+        chipBlack = findViewById(R.id.chipBlack);
+        chipRed = findViewById(R.id.chipRed);
+        chipOrange = findViewById(R.id.chipOrange);
+        chipYellow = findViewById(R.id.chipYellow);
+        chipGreen = findViewById(R.id.chipGreen);
+        chipBlue = findViewById(R.id.chipBlue);
+        chipPurple = findViewById(R.id.chipPurple);
+
         crayon = new Crayon();
         efface = new Efface();
 
@@ -73,15 +94,36 @@ public class MainActivity extends AppCompatActivity {
         buttonPot.setOnClickListener(ec);
         buttonEfface.setOnClickListener(ec);
 
+        Ecouteur ecColor = new Ecouteur();
+
+        chipWhite.setOnClickListener(ecColor);
+        chipBlack.setOnClickListener(ecColor);
+        chipRed.setOnClickListener(ecColor);
+        chipOrange.setOnClickListener(ecColor);
+        chipYellow.setOnClickListener(ecColor);
+        chipGreen.setOnClickListener(ecColor);
+        chipBlue.setOnClickListener(ecColor);
+        chipPurple.setOnClickListener(ecColor);
+
     }
 
+    private int backgroundColor = Color.WHITE;
     private class SurfaceDessin extends View {
+
 
         public SurfaceDessin(Context context) {
             super(context);
             // Initialize the paths list
             pathsAndTools = new ArrayList<>();
             currentPath = new Path();
+            //backgroundColor = Color.LTGRAY; // Set the initial background color
+            setBackgroundColor(backgroundColor); // Set background color to the view
+
+        }
+        // Method to update the background color and also update the backgroundColor field
+        public void updateBackgroundColor(int newColor) {
+            backgroundColor = newColor;  // Update the background color field
+            setBackgroundColor(backgroundColor);  // Apply the color to the view's background
         }
 
         @Override
@@ -109,10 +151,48 @@ public class MainActivity extends AppCompatActivity {
             }
             if (v == buttonPot) {
                 buttonSelected = buttonPot;
+                //sd.updateBackgroundColor(Color.WHITE); // Or any other color you'd like
+                pathsAndTools.clear();
+                currentPath.reset();
+                sd.invalidate();
+
             }
             if (v == buttonEfface) {
                 buttonSelected = buttonEfface;
                 paint = efface.getPaint();
+                efface.setColor(backgroundColor);
+            }
+
+            if (v == chipWhite) {
+                backgroundColor = getChipBackgroundColor(chipWhite);
+            }
+
+            if (v == chipBlack) {
+                backgroundColor = getChipBackgroundColor(chipBlack);
+            }
+
+            if (v == chipRed) {
+                backgroundColor = getChipBackgroundColor(chipRed);
+            }
+
+            if (v == chipOrange) {
+                backgroundColor = getChipBackgroundColor(chipOrange);
+            }
+
+            if (v == chipYellow) {
+                backgroundColor = getChipBackgroundColor(chipYellow);
+            }
+
+            if (v == chipGreen) {
+                backgroundColor = getChipBackgroundColor(chipGreen);
+            }
+
+            if (v == chipBlue) {
+                backgroundColor = getChipBackgroundColor(chipBlue);
+            }
+
+            if (v == chipPurple) {
+                backgroundColor = getChipBackgroundColor(chipPurple);
             }
 
 
@@ -143,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             if (buttonSelected == buttonPot) {
-                sd.setBackgroundColor(Color.LTGRAY);
+                sd.setBackgroundColor(backgroundColor);
             }
 
 
@@ -151,6 +231,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    private int getChipBackgroundColor(Chip chip) {
+        // Chips use a ColorStateList, so get the current (default) color
+        return chip.getChipBackgroundColor().getDefaultColor();
     }
 
     private class DrawnPath {
