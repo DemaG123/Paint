@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     ImageView buttonSelected;
-
+    private int backgroundColor = Color.WHITE;
 
 
     @Override
@@ -107,23 +107,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private int backgroundColor = Color.WHITE;
-    private class SurfaceDessin extends View {
 
+
+
+    private class SurfaceDessin extends View {
 
         public SurfaceDessin(Context context) {
             super(context);
             // Initialize the paths list
             pathsAndTools = new ArrayList<>();
             currentPath = new Path();
-            //backgroundColor = Color.LTGRAY; // Set the initial background color
-            setBackgroundColor(backgroundColor); // Set background color to the view
-
-        }
-        // Method to update the background color and also update the backgroundColor field
-        public void updateBackgroundColor(int newColor) {
-            backgroundColor = newColor;  // Update the background color field
-            setBackgroundColor(backgroundColor);  // Apply the color to the view's background
+            setBackgroundColor(backgroundColor);
         }
 
         @Override
@@ -149,53 +143,30 @@ public class MainActivity extends AppCompatActivity {
                 buttonSelected = buttonCrayon;
                 paint = crayon.getPaint();
             }
-            if (v == buttonPot) {
+            else if (v == buttonPot) {
                 buttonSelected = buttonPot;
-                //sd.updateBackgroundColor(Color.WHITE); // Or any other color you'd like
                 pathsAndTools.clear();
                 currentPath.reset();
                 sd.invalidate();
 
             }
-            if (v == buttonEfface) {
+            else if (v == buttonEfface) {
                 buttonSelected = buttonEfface;
                 paint = efface.getPaint();
                 efface.setColor(backgroundColor);
             }
 
-            if (v == chipWhite) {
-                backgroundColor = getChipBackgroundColor(chipWhite);
+            else if (v instanceof Chip) {
+                Chip chip = (Chip) v;
+                int color = getChipBackgroundColor(chip);
+
+                if (buttonSelected == buttonCrayon) {
+                    paint.setColor(color);   // crayon changes color
+                } else {
+                    backgroundColor = color; // bucket changes background reference
+                    efface.setColor(backgroundColor); // keep eraser synced
+                }
             }
-
-            if (v == chipBlack) {
-                backgroundColor = getChipBackgroundColor(chipBlack);
-            }
-
-            if (v == chipRed) {
-                backgroundColor = getChipBackgroundColor(chipRed);
-            }
-
-            if (v == chipOrange) {
-                backgroundColor = getChipBackgroundColor(chipOrange);
-            }
-
-            if (v == chipYellow) {
-                backgroundColor = getChipBackgroundColor(chipYellow);
-            }
-
-            if (v == chipGreen) {
-                backgroundColor = getChipBackgroundColor(chipGreen);
-            }
-
-            if (v == chipBlue) {
-                backgroundColor = getChipBackgroundColor(chipBlue);
-            }
-
-            if (v == chipPurple) {
-                backgroundColor = getChipBackgroundColor(chipPurple);
-            }
-
-
 
         }
 
@@ -205,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
             if (buttonSelected == buttonCrayon || buttonSelected == buttonEfface) {
                 float x = event.getX();
                 float y = event.getY();
-                crayon.setColor(backgroundColor);
+                //crayon.setColor(backgroundColor);
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
                     currentPath.moveTo(x, y);
@@ -226,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (buttonSelected == buttonPot) {
                 sd.setBackgroundColor(backgroundColor);
+                sd.invalidate();
             }
 
 
