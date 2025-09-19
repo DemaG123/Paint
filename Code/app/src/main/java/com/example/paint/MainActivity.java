@@ -29,7 +29,112 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    SurfaceDessin sd;
+
+    TraceLibre traceLibre;
+    ConstraintLayout surfaceDessinApp;
+
+    ImageView buttonCrayon, buttonEfface, buttonPot;
+    Chip chipWhite, chipBlack, chipRed, chipOrange, chipYellow, chipGreen, chipBlue, chipPurple;
+    SeekBar strokeWidth;
+
+    private Crayon crayon;
+    private Efface efface;
+
+    ImageView buttonSelected;
+    private int backgroundColor = Color.WHITE;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        // Layout
+        surfaceDessinApp = findViewById(R.id.surfaceDessinApp);
+
+        // DrawingView
+        traceLibre = new TraceLibre(this);
+        traceLibre.setLayoutParams(new ConstraintLayout.LayoutParams(-1, -1));
+        surfaceDessinApp.addView(traceLibre);
+
+        // Tools
+        buttonCrayon = findViewById(R.id.buttonCrayon);
+        buttonPot = findViewById(R.id.buttonPot);
+        buttonEfface = findViewById(R.id.buttonEfface);
+        strokeWidth = findViewById(R.id.strokeWidth);
+
+        // Colors
+        chipWhite = findViewById(R.id.chipWhite);
+        chipBlack = findViewById(R.id.chipBlack);
+        chipRed = findViewById(R.id.chipRed);
+        chipOrange = findViewById(R.id.chipOrange);
+        chipYellow = findViewById(R.id.chipYellow);
+        chipGreen = findViewById(R.id.chipGreen);
+        chipBlue = findViewById(R.id.chipBlue);
+        chipPurple = findViewById(R.id.chipPurple);
+
+        // Paint helpers
+        crayon = new Crayon();
+        efface = new Efface();
+
+        // Button listeners
+        buttonCrayon.setOnClickListener(v -> {
+            buttonSelected = buttonCrayon;
+            traceLibre.setPaint(crayon.getPaint());
+            strokeWidth.setVisibility(VISIBLE);
+        });
+
+        buttonEfface.setOnClickListener(v -> {
+            buttonSelected = buttonEfface;
+            efface.setColor(backgroundColor);
+            traceLibre.setPaint(efface.getPaint());
+        });
+
+        buttonPot.setOnClickListener(v -> {
+            buttonSelected = buttonPot;
+            traceLibre.clearCanvas();
+        });
+
+        strokeWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                traceLibre.setStrokeWidth(progress * 20);
+            }
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        // Color chips
+        View.OnClickListener colorClick = v -> {
+            Chip chip = (Chip) v;
+            int color = chip.getChipBackgroundColor().getDefaultColor();
+
+            if (buttonSelected == buttonCrayon) {
+                traceLibre.setColor(color);
+            } else {
+                backgroundColor = color;
+                efface.setColor(backgroundColor);
+                if (buttonSelected == buttonPot) {
+                    traceLibre.setBackgroundColorCustom(backgroundColor);
+                }
+            }
+        };
+
+        chipWhite.setOnClickListener(colorClick);
+        chipBlack.setOnClickListener(colorClick);
+        chipRed.setOnClickListener(colorClick);
+        chipOrange.setOnClickListener(colorClick);
+        chipYellow.setOnClickListener(colorClick);
+        chipGreen.setOnClickListener(colorClick);
+        chipBlue.setOnClickListener(colorClick);
+        chipPurple.setOnClickListener(colorClick);
+    }
+
+    /*SurfaceDessin sd;
     ConstraintLayout surfaceDessinApp;
     private Path currentPath; // Path for drawing
     private Paint paint; // Paint object for styling the lines
@@ -154,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
                 buttonSelected = buttonCrayon;
                 paint = crayon.getPaint();
                 strokeWidth.setVisibility(VISIBLE);
-                crayon.setStrokeWidth(strokeFactor * 20);
+                crayon.setStrokeWidth(strokeFactor * 10);
             }
             else if (v == buttonPot) {
                 buttonSelected = buttonPot;
@@ -249,6 +354,6 @@ public class MainActivity extends AppCompatActivity {
             this.path = path;
             this.paint = paint;
         }
-    }
+    }*/
 
 }
