@@ -125,5 +125,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:srcCompat="@drawable/remplir" />
+
+        <ImageView
+            android:id="@+id/buttonCircle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/cercle" />
     </LinearLayout>
 </LinearLayout>
