@@ -21,73 +21,115 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
+        android:layout_weight="10"
         android:orientation="horizontal">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipWhite"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:chipBackgroundColor="#FDFDFD" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/surfaceDessinApp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:background="#FFFFFF" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipBlack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:chipBackgroundColor="#020202" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipRed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:chipBackgroundColor="#FF0000" />
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#E9E8E8"
+                app:selectionRequired="true"
+                app:singleSelection="true">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipOrange"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:chipBackgroundColor="#FF5722" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipWhite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkable="true"
+                    app:chipBackgroundColor="#FDFDFD"
+                    app:chipStrokeColor="@color/chipeffect"
+                    app:chipStrokeWidth="1dp" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipYellow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:chipBackgroundColor="#FFEB3B" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBlack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkable="true"
+                    app:chipBackgroundColor="#020202"
+                    app:chipStrokeColor="@color/chipeffect"
+                    app:chipStrokeWidth="1dp" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipGreen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:chipBackgroundColor="#4CAF50" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkable="true"
+                    app:chipBackgroundColor="#FF0000"
+                    app:chipStrokeColor="@color/chipeffect"
+                    app:chipStrokeWidth="1dp" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipBlue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:chipBackgroundColor="#03A9F4" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipOrange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkable="true"
+                    app:chipBackgroundColor="#FF5722"
+                    app:chipStrokeColor="@color/chipeffect"
+                    app:chipStrokeWidth="1dp" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipPurple"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:chipBackgroundColor="#9C27B0" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipYellow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkable="true"
+                    app:chipBackgroundColor="#FFEB3B"
+                    app:chipStrokeColor="@color/chipeffect"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipGreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkable="true"
+                    app:chipBackgroundColor="#4CAF50"
+                    app:chipStrokeColor="@color/chipeffect"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBlue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkable="true"
+                    app:chipBackgroundColor="#03A9F4"
+                    app:chipStrokeColor="@color/chipeffect"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPurple"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkable="true"
+                    app:chipBackgroundColor="#9C27B0"
+                    app:chipStrokeColor="@color/chipeffect"
+                    app:chipStrokeWidth="1dp" />
+            </com.google.android.material.chip.ChipGroup>
+
+        </LinearLayout>
+
     </LinearLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/surfaceDessinApp"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10"
-        android:background="#FFFFFF"/>
 
     <SeekBar
         android:id="@+id/strokeWidth"
@@ -102,6 +144,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1.5"
+        android:background="#8BC34A"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -132,5 +175,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:srcCompat="@drawable/cercle" />
+
+        <ImageView
+            android:id="@+id/buttonTriangle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/triangle" />
     </LinearLayout>
 </LinearLayout>

@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     TraceLibre traceLibre;
     ConstraintLayout surfaceDessinApp;
 
-    ImageView buttonCrayon, buttonEfface, buttonPot, buttonCircle;
+    ImageView buttonCrayon, buttonEfface, buttonPot, buttonCircle, buttonTriangle;
     Chip chipWhite, chipBlack, chipRed, chipOrange, chipYellow, chipGreen, chipBlue, chipPurple;
     SeekBar strokeWidth;
 
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         buttonPot = findViewById(R.id.buttonPot);
         buttonEfface = findViewById(R.id.buttonEfface);
         buttonCircle = findViewById(R.id.buttonCircle);
+        buttonTriangle = findViewById(R.id.buttonTriangle);
         strokeWidth = findViewById(R.id.strokeWidth);
 
         // Colors
@@ -98,6 +99,13 @@ public class MainActivity extends AppCompatActivity {
             traceLibre.setMode(TraceLibre.Mode.CIRCLE);
             traceLibre.setPaint(crayon.getPaint());
             strokeWidth.setVisibility(VISIBLE);
+        });
+
+        buttonTriangle.setOnClickListener(v ->{
+            TriangleType dialog = new TriangleType(MainActivity.this);
+            dialog.show();
+
+
         });
 
         // --- Stroke width slider ---
