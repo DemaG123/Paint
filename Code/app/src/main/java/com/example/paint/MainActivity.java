@@ -3,7 +3,6 @@ package com.example.paint;
 import static android.view.View.VISIBLE;
 
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,17 +26,18 @@ public class MainActivity extends AppCompatActivity {
     Chip chipWhite, chipBlack, chipRed, chipOrange, chipYellow, chipGreen, chipBlue, chipPurple;
     SeekBar strokeWidth;
 
-    private Crayon crayon;
-    private Efface efface;
+    Crayon crayon;
+    Efface efface;
 
     ImageView buttonSelected;
-    private int backgroundColor = Color.WHITE;
+    int backgroundColor = Color.WHITE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             strokeWidth.setVisibility(VISIBLE);
         });
 
-        buttonTriangle.setOnClickListener(v ->{
+        buttonTriangle.setOnClickListener(v -> {
             TriangleType dialog = new TriangleType(MainActivity.this);
             dialog.show();
         });
@@ -128,7 +128,10 @@ public class MainActivity extends AppCompatActivity {
             Chip chip = (Chip) v;
             int color = chip.getChipBackgroundColor().getDefaultColor();
 
-            if (buttonSelected == buttonCrayon || buttonSelected == buttonCircle || buttonSelected == buttonRectangle) {
+            if (buttonSelected == buttonCrayon ||
+                    buttonSelected == buttonCircle ||
+                    buttonSelected == buttonRectangle ||
+                    buttonSelected == buttonTriangle) {
                 traceLibre.setColor(color);
             } else {
                 backgroundColor = color;

@@ -1,14 +1,14 @@
 package com.example.paint;
 
-import android.graphics.Color;
-import android.view.View;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -17,11 +17,13 @@ import java.util.List;
 
 public class TraceLibre extends View {
 
-    // Modes: freehand, circle, rectangle
     public enum Mode {
         FREEHAND,
         CIRCLE,
-        RECTANGLE
+        RECTANGLE,
+        TRIANGLE_EQUILATERAL,
+        TRIANGLE_ISOSCELES,
+        TRIANGLE_SCALENE
     }
 
     private Mode currentMode = Mode.FREEHAND;
@@ -31,12 +33,17 @@ public class TraceLibre extends View {
     private List<DrawnShape> shapes;
     private int backgroundColor;
 
-    // Circle temp vars
+    // Shared
     private float startX, startY;
+
+    // Circle
     private float tempRadius;
 
-    // Rectangle temp vars
+    // Rectangle
     private float endX, endY;
+
+    // Triangle
+    private float triEndX, triEndY;
 
     public TraceLibre(Context context) {
         super(context);
@@ -68,12 +75,14 @@ public class TraceLibre extends View {
                 canvas.drawCircle(shape.cx, shape.cy, shape.radius, shape.paint);
             } else if (shape.isRectangle) {
                 canvas.drawRect(shape.rect, shape.paint);
+            } else if (shape.isTriangle) {
+                canvas.drawPath(shape.trianglePath, shape.paint);
             } else {
                 canvas.drawPath(shape.path, shape.paint);
             }
         }
 
-        // Draw current preview
+        // --- Live Preview ---
         if (currentMode == Mode.FREEHAND) {
             canvas.drawPath(currentPath, currentPaint);
         } else if (currentMode == Mode.CIRCLE && tempRadius > 0) {
@@ -81,6 +90,13 @@ public class TraceLibre extends View {
         } else if (currentMode == Mode.RECTANGLE) {
             if (startX != endX && startY != endY) {
                 canvas.drawRect(new RectF(startX, startY, endX, endY), currentPaint);
+            }
+        } else if (currentMode == Mode.TRIANGLE_EQUILATERAL ||
+                currentMode == Mode.TRIANGLE_ISOSCELES ||
+                currentMode == Mode.TRIANGLE_SCALENE) {
+            if (startX != triEndX && startY != triEndY) {
+                Path preview = buildTrianglePath(currentMode, startX, startY, triEndX, triEndY);
+                canvas.drawPath(preview, currentPaint);
             }
         }
     }
@@ -151,9 +167,58 @@ public class TraceLibre extends View {
                         return true;
                 }
                 break;
+
+            case TRIANGLE_EQUILATERAL:
+            case TRIANGLE_ISOSCELES:
+            case TRIANGLE_SCALENE:
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startX = x;
+                        startY = y;
+                        triEndX = x;
+                        triEndY = y;
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        triEndX = x;
+                        triEndY = y;
+                        invalidate();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        triEndX = x;
+                        triEndY = y;
+                        Path triangle = buildTrianglePath(currentMode, startX, startY, triEndX, triEndY);
+                        Paint triPaint = new Paint(currentPaint);
+                        shapes.add(new DrawnShape(triangle, triPaint, true));
+                        invalidate();
+                        return true;
+                }
+        }
+        return false;
+    }
+
+    // --- Build Triangle Path ---
+    private Path buildTrianglePath(Mode type, float x1, float y1, float x2, float y2) {
+        Path path = new Path();
+        float midX = (x1 + x2) / 2;
+
+        if (type == Mode.TRIANGLE_EQUILATERAL) {
+            float side = Math.abs(x2 - x1);
+            float height = (float) (Math.sqrt(3) / 2 * side);
+            path.moveTo(x1, y2);
+            path.lineTo(x2, y2);
+            path.lineTo(midX, y2 - height);
+        } else if (type == Mode.TRIANGLE_ISOSCELES) {
+            path.moveTo(x1, y2);
+            path.lineTo(x2, y2);
+            path.lineTo(midX, y1);
+        } else { // Scalene
+            path.moveTo(x1, y1);
+            path.lineTo(x2, y2);
+            path.lineTo(x1, y2);
         }
 
-        return false;
+        path.close();
+        return path;
     }
 
     // --- APIs ---
@@ -197,12 +262,16 @@ public class TraceLibre extends View {
         boolean isRectangle;
         RectF rect;
 
-        // Freehand path
+        boolean isTriangle;
+        Path trianglePath;
+
+        // Freehand
         DrawnShape(Path path, Paint paint) {
             this.path = path;
             this.paint = paint;
             this.isCircle = false;
             this.isRectangle = false;
+            this.isTriangle = false;
         }
 
         // Circle
@@ -213,6 +282,7 @@ public class TraceLibre extends View {
             this.paint = paint;
             this.isCircle = true;
             this.isRectangle = false;
+            this.isTriangle = false;
         }
 
         // Rectangle
@@ -221,6 +291,16 @@ public class TraceLibre extends View {
             this.paint = paint;
             this.isCircle = false;
             this.isRectangle = true;
+            this.isTriangle = false;
+        }
+
+        // Triangle
+        DrawnShape(Path trianglePath, Paint paint, boolean isTriangle) {
+            this.trianglePath = trianglePath;
+            this.paint = paint;
+            this.isCircle = false;
+            this.isRectangle = false;
+            this.isTriangle = isTriangle;
         }
     }
 }

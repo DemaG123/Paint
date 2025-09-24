@@ -4,12 +4,10 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 public class TriangleType extends Dialog {
 
     Button buttonEquilateral, buttonIsocele, buttonScalene, buttonOk;
-
     MainActivity parent;
 
     public TriangleType(MainActivity parent) {
@@ -32,30 +30,26 @@ public class TriangleType extends Dialog {
         buttonIsocele.setOnClickListener(ec);
         buttonScalene.setOnClickListener(ec);
         buttonOk.setOnClickListener(ec);
-
     }
 
     private class Ecouteurs implements View.OnClickListener {
-
         @Override
         public void onClick(View v) {
-            if (v == buttonEquilateral){
-                //textView.setText(buttonChoixIso.getText());
+            if (v == buttonEquilateral) {
+                parent.traceLibre.setMode(TraceLibre.Mode.TRIANGLE_EQUILATERAL);
+                parent.traceLibre.setPaint(parent.crayon.getPaint());
             }
-            if (v == buttonIsocele){
-                //textView.setText(buttonChoixCarree.getText());
+            if (v == buttonIsocele) {
+                parent.traceLibre.setMode(TraceLibre.Mode.TRIANGLE_ISOSCELES);
+                parent.traceLibre.setPaint(parent.crayon.getPaint());
             }
-            if (v == buttonScalene){
-                //textView.setText(buttonChoixCarree.getText());
+            if (v == buttonScalene) {
+                parent.traceLibre.setMode(TraceLibre.Mode.TRIANGLE_SCALENE);
+                parent.traceLibre.setPaint(parent.crayon.getPaint());
             }
-            if (v == buttonOk){
+            if (v == buttonOk) {
                 dismiss();
             }
-
-
         }
     }
-
-
-
 }
