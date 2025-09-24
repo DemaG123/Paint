@@ -102,6 +102,13 @@ public class MainActivity extends AppCompatActivity {
             strokeWidth.setVisibility(VISIBLE);
         });
 
+        buttonRectangle.setOnClickListener(v -> {
+            buttonSelected = buttonRectangle;
+            traceLibre.setMode(TraceLibre.Mode.RECTANGLE);
+            traceLibre.setPaint(crayon.getPaint());
+            strokeWidth.setVisibility(VISIBLE);
+        });
+
         buttonTriangle.setOnClickListener(v ->{
             TriangleType dialog = new TriangleType(MainActivity.this);
             dialog.show();
@@ -121,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             Chip chip = (Chip) v;
             int color = chip.getChipBackgroundColor().getDefaultColor();
 
-            if (buttonSelected == buttonCrayon || buttonSelected == buttonCircle) {
+            if (buttonSelected == buttonCrayon || buttonSelected == buttonCircle || buttonSelected == buttonRectangle) {
                 traceLibre.setColor(color);
             } else {
                 backgroundColor = color;

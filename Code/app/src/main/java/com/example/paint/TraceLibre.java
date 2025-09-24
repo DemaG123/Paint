@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -16,22 +17,26 @@ import java.util.List;
 
 public class TraceLibre extends View {
 
-    // Modes: freehand or circle
+    // Modes: freehand, circle, rectangle
     public enum Mode {
         FREEHAND,
-        CIRCLE
+        CIRCLE,
+        RECTANGLE
     }
 
     private Mode currentMode = Mode.FREEHAND;
 
     private Path currentPath;
     private Paint currentPaint;
-    private List<DrawnShape> shapes;  // can be path or circle
+    private List<DrawnShape> shapes;
     private int backgroundColor;
 
     // Circle temp vars
     private float startX, startY;
     private float tempRadius;
+
+    // Rectangle temp vars
+    private float endX, endY;
 
     public TraceLibre(Context context) {
         super(context);
@@ -61,6 +66,8 @@ public class TraceLibre extends View {
         for (DrawnShape shape : shapes) {
             if (shape.isCircle) {
                 canvas.drawCircle(shape.cx, shape.cy, shape.radius, shape.paint);
+            } else if (shape.isRectangle) {
+                canvas.drawRect(shape.rect, shape.paint);
             } else {
                 canvas.drawPath(shape.path, shape.paint);
             }
@@ -71,6 +78,10 @@ public class TraceLibre extends View {
             canvas.drawPath(currentPath, currentPaint);
         } else if (currentMode == Mode.CIRCLE && tempRadius > 0) {
             canvas.drawCircle(startX, startY, tempRadius, currentPaint);
+        } else if (currentMode == Mode.RECTANGLE) {
+            if (startX != endX && startY != endY) {
+                canvas.drawRect(new RectF(startX, startY, endX, endY), currentPaint);
+            }
         }
     }
 
@@ -90,7 +101,6 @@ public class TraceLibre extends View {
                         invalidate();
                         return true;
                     case MotionEvent.ACTION_UP:
-                        // Save a copy of the path with paint
                         Paint newPaint = new Paint(currentPaint);
                         shapes.add(new DrawnShape(new Path(currentPath), newPaint));
                         currentPath.reset();
@@ -114,6 +124,29 @@ public class TraceLibre extends View {
                         Paint circlePaint = new Paint(currentPaint);
                         shapes.add(new DrawnShape(startX, startY, tempRadius, circlePaint));
                         tempRadius = 0;
+                        invalidate();
+                        return true;
+                }
+                break;
+
+            case RECTANGLE:
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startX = x;
+                        startY = y;
+                        endX = x;
+                        endY = y;
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        endX = x;
+                        endY = y;
+                        invalidate();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        endX = x;
+                        endY = y;
+                        Paint rectPaint = new Paint(currentPaint);
+                        shapes.add(new DrawnShape(new RectF(startX, startY, endX, endY), rectPaint));
                         invalidate();
                         return true;
                 }
@@ -157,14 +190,19 @@ public class TraceLibre extends View {
     private static class DrawnShape {
         Path path;
         Paint paint;
+
         boolean isCircle;
         float cx, cy, radius;
+
+        boolean isRectangle;
+        RectF rect;
 
         // Freehand path
         DrawnShape(Path path, Paint paint) {
             this.path = path;
             this.paint = paint;
             this.isCircle = false;
+            this.isRectangle = false;
         }
 
         // Circle
@@ -174,6 +212,15 @@ public class TraceLibre extends View {
             this.radius = radius;
             this.paint = paint;
             this.isCircle = true;
+            this.isRectangle = false;
+        }
+
+        // Rectangle
+        DrawnShape(RectF rect, Paint paint) {
+            this.rect = rect;
+            this.paint = paint;
+            this.isCircle = false;
+            this.isRectangle = true;
         }
     }
 }
