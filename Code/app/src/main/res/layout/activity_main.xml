@@ -177,6 +177,13 @@
             app:srcCompat="@drawable/cercle" />
 
         <ImageView
+            android:id="@+id/buttonRectangle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/rectangle" />
+
+        <ImageView
             android:id="@+id/buttonTriangle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
