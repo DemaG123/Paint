@@ -1,31 +1,51 @@
 package com.example.paint;
 
-import android.graphics.Color;
+import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.view.MotionEvent;
 
-public class Triangle {
+public class Triangle extends Outils {
+    private float startX, startY, endX, endY;
+    private boolean drawing = false;
 
-    private Paint paint;
+    @Override
+    public boolean onTouchEvent(MotionEvent event, TraceLibre view) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                startX = event.getX();
+                startY = event.getY();
+                drawing = true;
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                endX = event.getX();
+                endY = event.getY();
+                view.invalidate();
+                return true;
+            case MotionEvent.ACTION_UP:
+                Path triangle = new Path();
+                triangle.moveTo((startX + endX) / 2, startY); // Top
+                triangle.lineTo(startX, endY);                // Bottom left
+                triangle.lineTo(endX, endY);                  // Bottom right
+                triangle.close();
 
-    public Triangle() {
-        paint = new Paint();
-        paint.setColor(Color.BLACK);
-        paint.setStyle(Paint.Style.STROKE); // outline
-        paint.setStrokeWidth(5);
-        paint.setAntiAlias(true);
+                view.addShape(new TraceLibre.DrawnShape(triangle, new Paint(paint)));
+                drawing = false;
+                view.invalidate();
+                return true;
+        }
+        return false;
     }
 
-    public Paint getPaint() {
-        return paint;
+    @Override
+    public void onDrawPreview(Canvas canvas) {
+        if (drawing) {
+            Path triangle = new Path();
+            triangle.moveTo((startX + endX) / 2, startY);
+            triangle.lineTo(startX, endY);
+            triangle.lineTo(endX, endY);
+            triangle.close();
+            canvas.drawPath(triangle, paint);
+        }
     }
-
-    public void setColor(int color) {
-        paint.setColor(color);
-    }
-
-    public void setStrokeWidth(float width) {
-        paint.setStrokeWidth(width);
-    }
-
-
 }

@@ -1,31 +1,20 @@
 package com.example.paint;
 
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.Canvas;
+import android.view.MotionEvent;
 
-public class Efface {
-    private Paint paint;
-
+public class Efface extends Crayon {
     public Efface() {
-        paint = new Paint();
-        configurePaint();
+        super();
     }
 
-    private void configurePaint() {
-        paint.setColor(Color.WHITE); // Black color
-        paint.setStrokeWidth(100); // Line width
-        paint.setStyle(Paint.Style.STROKE); // Draw only the outline
-        paint.setAntiAlias(true); // Smooth lines
-    }
-
-    public Paint getPaint() {return paint;}
     public void setColor(int color) {
         paint.setColor(color);
     }
-    public void setStrokeWidth(float width) {
-        paint.setStrokeWidth(width);
-    }
-    public void setStyle(Paint.Style style) {
-        paint.setStyle(style);
+
+    @Override
+    public void onDrawPreview(Canvas canvas) {
+        // Just use Crayon behavior
+        super.onDrawPreview(canvas);
     }
 }

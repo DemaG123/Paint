@@ -8,7 +8,7 @@ import android.widget.Button;
 public class TriangleType extends Dialog {
 
     Button buttonEquilateral, buttonIsocele, buttonScalene, buttonOk;
-    MainActivity parent;
+    private final MainActivity parent;
 
     public TriangleType(MainActivity parent) {
         super(parent);
@@ -25,31 +25,15 @@ public class TriangleType extends Dialog {
         buttonScalene = findViewById(R.id.buttonScalene);
         buttonOk = findViewById(R.id.bouttonOk);
 
-        Ecouteurs ec = new Ecouteurs();
-        buttonEquilateral.setOnClickListener(ec);
-        buttonIsocele.setOnClickListener(ec);
-        buttonScalene.setOnClickListener(ec);
-        buttonOk.setOnClickListener(ec);
+
+        buttonOk.setOnClickListener(v -> dismiss());
     }
 
     private class Ecouteurs implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            if (v == buttonEquilateral) {
-                parent.traceLibre.setMode(TraceLibre.Mode.TRIANGLE_EQUILATERAL);
-                parent.traceLibre.setPaint(parent.crayon.getPaint());
-            }
-            if (v == buttonIsocele) {
-                parent.traceLibre.setMode(TraceLibre.Mode.TRIANGLE_ISOSCELES);
-                parent.traceLibre.setPaint(parent.crayon.getPaint());
-            }
-            if (v == buttonScalene) {
-                parent.traceLibre.setMode(TraceLibre.Mode.TRIANGLE_SCALENE);
-                parent.traceLibre.setPaint(parent.crayon.getPaint());
-            }
-            if (v == buttonOk) {
-                dismiss();
-            }
+
+            dismiss();
         }
     }
 }
